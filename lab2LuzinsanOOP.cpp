@@ -6,7 +6,7 @@ using namespace luzalex;
 int main()
 {
     setlocale(LC_ALL, "Russian");
-    srand(time(0));
+    srand(static_cast<unsigned int>(time(0)));
     rand();
 
     std::cout << "asterix: \n" << std::endl;
@@ -20,5 +20,5 @@ int main()
     std::cout << "abelix: \n" << std::endl;
     Matrix abelix(matrix + maMatrix);
 
-
+    return 0;
 }
