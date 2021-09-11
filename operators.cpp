@@ -2,12 +2,12 @@
 
 namespace luzalex
 {
-    Matrix operator+(const Matrix& A, const Matrix& B)
+    const Matrix operator+(const Matrix& A, const Matrix& B)
     {
-        std::cout << "Îïåðàöèÿ ñëîæåíèÿ:" << std::endl;
         if (canAdd(A, B))
         {
             Matrix C = { A.m_m, A.m_n };
+            std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑÐ»Ð¾Ð¶ÐµÐ½Ð¸Ñ:" << std::endl;
             C.array = new double* [C.m_m];
             for (int i = 0; i < C.m_m; ++i)
             {
@@ -16,21 +16,20 @@ namespace luzalex
                 {
                     C.array[i][j] = A.array[i][j] + B.array[i][j];
                     printf("%3.0f ", C.array[i][j]);
-                    //std::cout << "%3.0f" << C.array[i][j];
                 }
                 std::cout << std::endl;
             }
             return C;
         }
-        else std::cout << "Ñ äàííûìè ìàòðèöàìè îïåðàöèÿ ñëîæåíèÿ íå ìîæåò áûòü ïðîèçâåäåíà" << std::endl;
+        else std::cout << "Ð¡ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ð°Ð¼Ð¸ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑÐ»Ð¾Ð¶ÐµÐ½Ð¸Ñ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð°" << std::endl;
         return A;
     }
-    Matrix operator-(const Matrix& A, const Matrix& B)
+    const Matrix operator-(const Matrix& A, const Matrix& B)
     {
-        std::cout << "Îïåðàöèÿ âû÷èòàíèÿ:" << std::endl;
         if (canAdd(A, B))
         {
             Matrix C = { A.m_m, A.m_n };
+            std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ Ð²Ñ‹Ñ‡Ð¸Ñ‚Ð°Ð½Ð¸Ñ:" << std::endl;
             C.array = new double* [C.m_m];
             for (int i = 0; i < C.m_m; ++i)
             {
@@ -45,15 +44,16 @@ namespace luzalex
             }
             return C;
         }
-        else std::cout << "Ñ äàííûìè ìàòðèöàìè îïåðàöèÿ ðàçíîñòè íå ìîæåò áûòü ïðîèçâåäåíà" << std::endl;
+        else std::cout << "Ð¡ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ð°Ð¼Ð¸ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ñ Ñ€Ð°Ð·Ð½Ð¾ÑÑ‚Ð¸ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð°" << std::endl;
         return A;
     }
-    Matrix operator*(const Matrix& A, const Matrix& B)
+    const Matrix operator*(const Matrix& A, const Matrix& B)
     {
-        std::cout << "Îïåðàöèÿ óìíîæåíèÿ:" << std::endl;
+        
         if (canMltpl(A, B))
         {
             Matrix C = { A.m_m, B.m_n };
+            std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑƒÐ¼Ð½Ð¾Ð¶ÐµÐ½Ð¸Ñ:" << std::endl;
             C.array = new double* [C.m_m];
             for (int i = 0; i < C.m_m; ++i)
             {
@@ -68,14 +68,15 @@ namespace luzalex
             }
             return C;
         }
-        else std::cout << "Ñ äàííûìè ìàòðèöàìè îïåðàöèÿ óìíîæåíèÿ íå ìîæåò áûòü ïðîèçâåäåíà" << std::endl;
+        else std::cout << "Ð¡ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ð°Ð¼Ð¸ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑƒÐ¼Ð½Ð¾Ð¶ÐµÐ½Ð¸Ñ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð°" << std::endl;
         return A;
     }
-    Matrix operator*(const Matrix& A, const int k)
+    const Matrix operator*(const Matrix& A, const double k)
     {
-        std::cout << "Îïåðàöèÿ óìíîæåíèÿ ìàòðèöû íà ñêàëÿð:" << std::endl;
+        
 
         Matrix C = { A.m_m, A.m_n };
+        std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑƒÐ¼Ð½Ð¾Ð¶ÐµÐ½Ð¸Ñ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ñ‹ Ð½Ð° ÑÐºÐ°Ð»ÑÑ€:" << std::endl;
         C.array = new double* [C.m_m];
         for (int i = 0; i < C.m_m; ++i)
         {
@@ -103,10 +104,9 @@ namespace luzalex
 
     }
 
-
-    Matrix& Matrix::operator=(const Matrix& matrix)//ìåòîä êëàññà
+    const Matrix& Matrix::operator=(const Matrix& matrix)//Ð¼ÐµÑ‚Ð¾Ð´ ÐºÐ»Ð°ÑÑÐ°
     {
-        // Ïðîâåðêà íà ñàìîïðèñâàèâàíèå
+        // ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° ÑÐ°Ð¼Ð¾Ð¿Ñ€Ð¸ÑÐ²Ð°Ð¸Ð²Ð°Ð½Ð¸Ðµ
         if (this == &matrix)
             return *this;
         for (int i = 0; i < matrix.m_m; ++i)
@@ -115,10 +115,9 @@ namespace luzalex
 
         return *this;
     }
-
-    Matrix& Matrix::operator+=(const Matrix& matrix)//ìåòîä êëàññà
+    const Matrix& Matrix::operator+=(const Matrix& matrix)//Ð¼ÐµÑ‚Ð¾Ð´ ÐºÐ»Ð°ÑÑÐ°
     {
-        std::cout << "Îïåðàöèÿ ñëîæåíèÿ ñ ïðèñâàèâàíèåì:" << std::endl;
+        std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑÐ»Ð¾Ð¶ÐµÐ½Ð¸Ñ Ñ Ð¿Ñ€Ð¸ÑÐ²Ð°Ð¸Ð²Ð°Ð½Ð¸ÐµÐ¼:" << std::endl;
         for (int i = 0; i < m_m; ++i)
         {
             for (int j = 0; j < m_n; ++j)
@@ -130,9 +129,9 @@ namespace luzalex
         }
         return *this;
     }
-    Matrix& Matrix::operator-=(const Matrix& matrix)//ìåòîä êëàññà
+    const Matrix& Matrix::operator-=(const Matrix& matrix)//Ð¼ÐµÑ‚Ð¾Ð´ ÐºÐ»Ð°ÑÑÐ°
     {
-        std::cout << "Îïåðàöèÿ âû÷èòàíèÿ ñ ïðèñâàèâàíèåì:" << std::endl;
+        std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ Ð²Ñ‹Ñ‡Ð¸Ñ‚Ð°Ð½Ð¸Ñ Ñ Ð¿Ñ€Ð¸ÑÐ²Ð°Ð¸Ð²Ð°Ð½Ð¸ÐµÐ¼:" << std::endl;
         for (int i = 0; i < m_m; ++i)
         {
             for (int j = 0; j < m_n; ++j)
@@ -144,9 +143,9 @@ namespace luzalex
         }
         return *this;
     }
-    Matrix& Matrix::operator*=(const Matrix& matrix)//ìåòîä êëàññà
+    const Matrix& Matrix::operator*=(const Matrix& matrix)//Ð¼ÐµÑ‚Ð¾Ð´ ÐºÐ»Ð°ÑÑÐ°
     {
-        std::cout << "Îïåðàöèÿ óìíîæåíèÿ ñ ïðèñâàèâàíèåì:" << std::endl;
+        std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑƒÐ¼Ð½Ð¾Ð¶ÐµÐ½Ð¸Ñ Ñ Ð¿Ñ€Ð¸ÑÐ²Ð°Ð¸Ð²Ð°Ð½Ð¸ÐµÐ¼:" << std::endl;
         if (canMltpl(*this, matrix))
         {
             for (int i = 0; i < m_m; ++i)
@@ -159,13 +158,12 @@ namespace luzalex
                 std::cout << std::endl;
             }
         }
-        else std::cout << "Ñ äàííûìè ìàòðèöàìè îïåðàöèÿ ñëîæåíèÿ ñ ïðèñâàèâàíèåì íå ìîæåò áûòü ïðîèçâåäåíà" << std::endl;
+        else std::cout << "Ð¡ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ð°Ð¼Ð¸ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑÐ»Ð¾Ð¶ÐµÐ½Ð¸Ñ Ñ Ð¿Ñ€Ð¸ÑÐ²Ð°Ð¸Ð²Ð°Ð½Ð¸ÐµÐ¼ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð°" << std::endl;
         return *this;
     }
-
-    Matrix& Matrix::operator*=(const int k)
+    const Matrix& Matrix::operator*=(const double k)
     {
-        std::cout << "Îïåðàöèÿ óìíîæåíèÿ íà ñêàëÿð ñ ïðèñâàèâàíèåì:" << std::endl;
+        std::cout << "ÐžÐ¿ÐµÑ€Ð°Ñ†Ð¸Ñ ÑƒÐ¼Ð½Ð¾Ð¶ÐµÐ½Ð¸Ñ Ð½Ð° ÑÐºÐ°Ð»ÑÑ€ Ñ Ð¿Ñ€Ð¸ÑÐ²Ð°Ð¸Ð²Ð°Ð½Ð¸ÐµÐ¼:" << std::endl;
         for (int i = 0; i < m_m; ++i)
         {
             for (int j = 0; j < m_n; ++j)
@@ -178,7 +176,6 @@ namespace luzalex
 
         return *this;
     }
-
 
     /*
     double* Matrix::operator[](const Matrix& matrix)
@@ -194,5 +191,4 @@ namespace luzalex
 
 
     }*/
-
 }
