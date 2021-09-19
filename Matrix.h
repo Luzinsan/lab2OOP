@@ -1,70 +1,64 @@
 #pragma once
-#include <iostream>
+#include <iostream>//для std::ostream и std::istream
 
-namespace luzalex
+namespace luMath 
 {
     class Matrix
     {
     private:
-        int m_m, m_n;//m_m - кол-во строк; m_n - кол-во столбцов
-        double** array;
         static int s_idGenerator;
         int m_id;
+        int m_rows, m_cols;
+
+        class Row;// подкласс строк матрицы (объявление)
+        Row* m_subrows; // указатель на массив подкласса строк матрицы
+        class Row// подкласс строк матрицы (реализация)
+        {
+        public:
+            double* r_col;
+            Row() {}
+            Row(int cols);
+            double& operator[](int col);
+            double& operator[](int col) const;
+        };
 
     public:
-        Matrix(): m_id{ s_idGenerator++ }
-        {
-            std::cout << "Конструктор по умолчанию #" << m_id << std::endl;
-            Matrix(3, 3);
-        }
-        Matrix(int m): m_id{ s_idGenerator++ }
-        {
-            std::cout << "Конструктор #" << m_id << " - квадратная матрица" << std::endl;
-            Matrix(m, m);
-        }
-        Matrix(int m, int n);
+
+        Matrix();
+        Matrix(int rows);
+        Matrix(int rows, int cols);
         Matrix(const Matrix& fromMatrix);
-        ~Matrix()
-        {
-            std::cout << "Деструктор матрицы #" << m_id << std::endl;
-            for (int i = 0; i < m_m; ++i)
-                delete[] array[i];
-            delete[] array;
-        }
+        ~Matrix();
+        Row& operator[](int row);
+        Row& operator[](int row) const;
 
-        friend const bool canMltpl(const Matrix& A, const Matrix& B)
-        { return A.m_n == B.m_m; }
+        // Проверка возможности перемножение матриц ... и сложения/вычитания их элементов
+        friend bool canMltpl(const Matrix& A, const Matrix& B);
+        friend bool canAdd(const Matrix& A, const Matrix& B);
 
-        friend const bool canAdd(const Matrix& A, const Matrix& B)
-        { return A.m_m == B.m_m && A.m_n == B.m_n; }
+        // Нахождение минимального/максимального значения матрицы
+        double maxItem();
+        double minItem();
 
-        const double maxItem();
-        const double minItem();
-        
+        // Перегрузка бинарных операторов для матриц (сложение, вычитание, умножение матрицб умножение матрицы на скаляр), если это возможно (проверка есть)
+        friend Matrix operator+(const Matrix& A, const Matrix& B);
+        friend Matrix operator-(const Matrix& A, const Matrix& B);
+        friend Matrix operator*(const Matrix& A, const Matrix& B);
+        friend Matrix operator*(const Matrix& A, double k);
 
-        //дружественность функции позволяет напрямую обращаться к закрытому члену класса
-        //перегрузка бинарных операторов для матриц (сложение, вычитание, умножение матриц), если это возможно (проверка есть)
-        friend const Matrix operator+(const Matrix& A, const Matrix& B);
-        friend const Matrix operator-(const Matrix& A, const Matrix& B);
-        friend const Matrix operator*(const Matrix& A, const Matrix& B);
-        /* Перегрузка оператора* для умножения матрицы на скаляр
-           с сохранением первоначальной матрицы и копированием умноженной матрицы с возвратом в caller*/
-        friend const Matrix operator*(const Matrix& A, const double k);
-        // Перегрузка оператора вывода матрицы
+        // Перегрузка оператора вывода/ввода матрицы
         friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix);
+        friend std::istream& operator>>(std::istream& in, Matrix& matrix);
 
-
-        // Перегрузка оператора присваивания как метода класса (передаётся неявный объект - левый операнд)
+        // Перегрузка оператора присваивания 
         const Matrix& operator=(const Matrix& matrix);
-        // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием как метода класса
+        // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием 
         const Matrix& operator+=(const Matrix& matrix);
         const Matrix& operator-=(const Matrix& matrix);
         const Matrix& operator*=(const Matrix& matrix);
-        const Matrix& operator*=(const double k);
+        const Matrix& operator*=(double k);
 
-        //Оператор доступа к члену
-        //double* operator[](const Matrix& matrix);
-        //double& operator[](const int index);
-
+       
     };
+
 }
