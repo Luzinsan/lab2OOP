@@ -15,7 +15,7 @@ namespace luMath
 
 
 
-    /* необходимо реализовать так же перемещающие конструкции (конструктор перемещения и оператор перемещения=).*/
+    /* необходимо реализовать также перемещающие конструкции (конструктор перемещения и оператор перемещения=).*/
 
     /* Все ошибки должны генерировать исключение (throw). 
     Текст исключения должен кратко описывать причину ошибки 
@@ -43,9 +43,20 @@ namespace luMath
     }
     Matrix::Matrix(int rows, int cols) : m_rows{ rows }, m_cols{ cols }, m_id{ s_idGenerator++ }
     {
-        std::cout << "Конструктор с параметрами. Создание объекта #" << m_id 
-            << ": m = " << m_rows 
-            << ", n = " << m_cols 
+        try
+        {
+            if(m_rows <= 0 || m_cols <= 0)
+                throw "Размерность строк или столбцов не может быть меньше либо равным нулю. Обработка исключения: матрица 5x5";
+        }
+        catch (const char* exception)
+        {
+            std::cout << exception;
+            m_rows = 5; m_cols = 5;
+        }
+
+        std::cout << "Конструктор с параметрами. Создание объекта #" << m_id
+            << ": m = " << m_rows
+            << ", n = " << m_cols
             << std::endl;
 
         m_items = new double[m_rows * m_cols];
@@ -61,9 +72,19 @@ namespace luMath
             << " в объект #" << m_id << std::endl;
 
         m_items = new double[m_rows * m_cols];
-        for (int i = 0; i < m_rows; i++)
-            for (int j = 0; j < m_cols; j++)
-                m_items[i * m_cols + j] = fromMatrix.m_items[i * m_cols + j];
+        try
+        {
+            if (!m_items)
+                throw "\n\t\tФатальное выделение памяти!\n";
+
+            for (int i = 0; i < m_rows; i++)
+                for (int j = 0; j < m_cols; j++)
+                    m_items[i * m_cols + j] = fromMatrix.m_items[i * m_cols + j];
+        }
+        catch (const char* exception)
+        {
+            std::cout << exception << "Объект №" << m_id << " НЕ был создан\n";
+        }
     }
     Matrix::Row::Row(double* row, int cols) : p_row{ row }, m_cols{ cols } { }
     
@@ -84,8 +105,10 @@ namespace luMath
     bool canMltpl(const Matrix& A, const Matrix& B) 
     { return A.m_cols == B.m_rows; }
     bool canAdd(const Matrix& A, const Matrix& B) 
-    { return A.m_rows == B.m_rows 
-          && A.m_cols == B.m_cols; }
+    { 
+        return A.m_rows == B.m_rows 
+          && A.m_cols == B.m_cols; 
+    }
 
     double Matrix::maxItem() const
     {
@@ -108,57 +131,75 @@ namespace luMath
 
     Matrix operator+(const Matrix& A, const Matrix& B)
     {
-        if (canAdd(A, B))
+        try
         {
+            if (!canAdd(A, B))
+                throw "\nС данными матрицами операция сложения не может быть произведена.\t(возвращается левый операнд)\n";
+            
             Matrix C(A.m_rows, A.m_cols); //Создание нового объекта
             for (int i = 0; i < C.m_rows; i++)
                 for (int j = 0; j < C.m_cols; j++)
-                    C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j] 
+                    C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j]
                                                 + B.m_items[i * B.m_cols + j];
             return C;
         }
-        else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
-                       << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
-                       << "\tС данными матрицами операция сложения не может быть произведена. (возвращается первый операнд)" << std::endl;
-        return A;
+        catch (const char* exception)
+        {
+            std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
+                      << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
+                      << exception;
+            return A;
+        }
     }
     Matrix operator-(const Matrix& A, const Matrix& B)
     {
-        if (canAdd(A, B))
+        try
         {
-            Matrix C(A.m_rows, A.m_cols); 
+            if (!canAdd(A, B))
+                throw "\n\tС данными матрицами операция вычитания не может быть произведена. (возвращается левый операнд)\n";
+
+            Matrix C(A.m_rows, A.m_cols); //Создание нового объекта
             for (int i = 0; i < C.m_rows; i++)
                 for (int j = 0; j < C.m_cols; j++)
-                    C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j] 
+                    C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j]
                                                 - B.m_items[i * B.m_cols + j];
             return C;
         }
-        else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
-                       << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
-                       << "\tС данными матрицами операция вычитания не может быть произведена. (возвращается первый операнд)" << std::endl;
-        return A;
+        catch (const char* exception)
+        {
+            std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
+                      << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
+                      << exception << std::endl;
+            return A;
+        }
     }
     Matrix operator*(const Matrix& A, const Matrix& B)
     {
-        if (canMltpl(A, B))
+        try
         {
+            if (!canMltpl(A, B))
+                throw "\n\tС данными матрицами операция произведения не может быть произведена. (возвращается левый операнд)\n";
+
             double temp = 0;
-            Matrix C(A.m_rows, B.m_cols); 
+            Matrix C(A.m_rows, B.m_cols);
             for (int i = 0; i < C.m_rows; i++)
                 for (int j = 0; j < C.m_cols; j++)
                 {
                     temp = 0;
                     for (int k = 0; k < B.m_rows; k++)
-                        temp += A.m_items[i * A.m_cols + k] 
+                        temp += A.m_items[i * A.m_cols + k]
                               * B.m_items[k * B.m_cols + j];
                     C.m_items[i * C.m_cols + j] = temp;
                 }
             return C;
         }
-        else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
-                       << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
-                       << "\tС данными матрицами операция умножения не может быть произведена. (возвращается первый операнд)" << std::endl;
-        return A;
+        catch (const char* exception)
+        {
+            std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
+                      << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
+                      << exception << std::endl;
+            return A;
+        }
     }
     Matrix operator*(const Matrix& A, double k)
     {
@@ -213,14 +254,21 @@ namespace luMath
     }
     const Matrix& Matrix::operator*=(const Matrix& matrix)
     {
-        if (canMltpl(*this, matrix) && m_cols == matrix.m_cols)
+        try
         {
+            if (!(canMltpl(*this, matrix) && m_cols == matrix.m_cols))
+                throw "\tС данными матрицами операция умножения не может быть произведена, \n"
+                      "\tлибо размерность полученной матрицы не совпадает с размерностью левого операнда.";
+
             Matrix C(m_rows, matrix.m_cols);
             (*this) = (*this) * matrix;
         }
-        else std::cout << "Объект #" << m_id        << ": m = " << m_rows        << " n = " << m_cols        << std::endl
-                       << "Объект #" << matrix.m_id << ": m = " << matrix.m_rows << " n = " << matrix.m_cols << std::endl
-                       << "\tС данными матрицами операция умножения не может быть произведена." << std::endl;
+        catch (const char* exception)
+        {
+            std::cout << "Объект #" <<        m_id << ": m = " <<        m_rows << " n = " <<        m_cols << std::endl
+                      << "Объект #" << matrix.m_id << ": m = " << matrix.m_rows << " n = " << matrix.m_cols << std::endl
+                      << exception << std::endl;
+        }
         return *this;
     }
     const Matrix& Matrix::operator*=(double k)
@@ -231,28 +279,64 @@ namespace luMath
 
     double& Matrix::Row::operator[](int col) 
     {
-        if (col < m_cols)
-            return p_row[col]; // возвращаем ссылку на col-элемент строки p_row
+        try 
+        {
+            if (col >= m_cols)
+                throw "\nНомер столбца выходит за пределы матрицы.";
+        }
+        catch(const char* exception)
+        {
+            col = m_cols - 1;
+            std::cout << exception << "\tИсключение обработано: номер возвращаемого элемента столбца в заданной строке ->" << col << "\n";
+        }
+        return p_row[col]; // возвращаем ссылку на col-элемент строки p_row
     }
     Matrix::Row Matrix::operator[](int row) 
     { 
-        if (row < m_rows)
-            /*Возвращаем анонимный объект с инициализацией его полей 
-            1) указателем на нужную строку (строку row)
-            2) и кол-вом столбцов для проверки правильности обращения к элементу строки в последствии 
-            ***После создания анонимного объекта применяется перегрузка оператора[] в подклассе Row */
-            return  Row(m_items + (row * m_cols), m_cols); 
-    
+        try
+        {
+            if (row >= m_rows)
+                throw "\nНомер строки выходит за пределы матрицы.";
+        }
+        catch (const char* exception)
+        {
+            row = m_rows - 1;
+            std::cout << exception << "\tИсключение обработано: номер возвращаемой строки ->" << row << "\n";
+        }
+        
+        /*Возвращаем анонимный объект с инициализацией его полей 
+        1) указателем на нужную строку (строку row)
+        2) и кол-вом столбцов для проверки правильности обращения к элементу строки в последствии 
+        ***После создания анонимного объекта применяется перегрузка оператора[] в подклассе Row */
+        return  Row(m_items + (row * m_cols), m_cols); 
     }
 
     const double& Matrix::Row::operator[](int col) const 
     { 
-        if (col < m_cols)
-            return p_row[col];
+        try
+        {
+            if (col >= m_cols)
+                throw "\nНомер столбца выходит за пределы матрицы.";
+        }
+        catch (const char* exception)
+        {
+            col = m_cols - 1;
+            std::cout << exception<< "\tИсключение обработано: номер возвращаемой константной строки ->" << col << "\n";
+        }
+        return p_row[col]; // возвращаем ссылку на col-элемент строки p_row
     }
     const Matrix::Row Matrix::operator[](int row) const 
     { 
-        if (row < m_rows)
-            return  Row(m_items + (row * m_cols), m_cols);
+        try
+        {
+            if (row >= m_rows)
+                throw "\nНомер строки выходит за пределы матрицы.";
+        }
+        catch (const char* exception)
+        {
+            row = m_rows - 1;
+            std::cout << exception << "\tИсключение обработано: номер возвращаемой строки ->" << row << "\n";
+        }
+        return  Row(m_items + (row * m_cols), m_cols);
     }
 }
