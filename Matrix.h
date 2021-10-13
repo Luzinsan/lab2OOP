@@ -15,9 +15,10 @@ namespace luMath
         {
         private:
             double* p_row;
+            int m_cols;
         public:
 
-            Row(double* row);
+            Row(double* row, int m_cols);
             double& operator[](int col);
             const double& operator[](int col) const;
         };
