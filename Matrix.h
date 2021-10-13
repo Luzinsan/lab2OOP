@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>//для std::ostream и std::istream
 #include <iomanip>
+
 namespace luMath
 {
     class Matrix
@@ -17,7 +18,6 @@ namespace luMath
             double* p_row;
             int m_cols;
         public:
-
             Row(double* row, int m_cols);
             ~Row();
             double& operator[](int col);
@@ -25,16 +25,15 @@ namespace luMath
         };
 
     public:
-
-        Matrix();
-        Matrix(int rows);
-        Matrix(int rows, int cols);
-        Matrix(const Matrix& fromMatrix);
+        Matrix(); // Конструктор по умолчанию - создание матрицы 5x5
+        Matrix(int rows); // Конструктор квадратной матрицы
+        Matrix(int rows, int cols); // Конструктор прямоугольной матрицы
+        Matrix(const Matrix& fromMatrix); // Копирующий конструктор
         ~Matrix();
-        Row operator[](int row);
+        Row operator[](int row); // Конструктор создания временной строки (без выделения памяти)
         const Row operator[](int row) const;
 
-        // Проверка возможности перемножение матриц ... и сложения/вычитания их элементов
+        // Проверка возможности перемножение матриц и сложение/вычитание матриц
         friend bool canMltpl(const Matrix& A, const Matrix& B);
         friend bool canAdd(const Matrix& A, const Matrix& B);
 
@@ -42,7 +41,7 @@ namespace luMath
         double maxItem() const;
         double minItem() const;
 
-        // Перегрузка бинарных операторов для матриц (сложение, вычитание, умножение матрицб умножение матрицы на скаляр), если это возможно (проверка есть)
+        // Перегрузка бинарных операторов для матриц (сложение, вычитание, умножение матриц, умножение матрицы на скаляр)
         friend Matrix operator+(const Matrix& A, const Matrix& B);
         friend Matrix operator-(const Matrix& A, const Matrix& B);
         friend Matrix operator*(const Matrix& A, const Matrix& B);
@@ -53,15 +52,12 @@ namespace luMath
        
         friend std::istream& operator>>(std::istream& in, Matrix& matrix);
 
-        // Перегрузка оператора присваивания 
+        // Перегрузка оператора присваивания(копирования) 
         const Matrix& operator=(const Matrix& matrix);
-        // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием 
+        // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием(копированием) 
         const Matrix& operator+=(const Matrix& matrix);
         const Matrix& operator-=(const Matrix& matrix);
         const Matrix& operator*=(const Matrix& matrix);
         const Matrix& operator*=(double k);
-
-
     };
-
 }
