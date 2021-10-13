@@ -55,7 +55,7 @@ namespace luMath
     bool canMltpl(const Matrix& A, const Matrix& B) { return A.m_cols == B.m_rows; }
     bool canAdd(const Matrix& A, const Matrix& B) { return A.m_rows == B.m_rows && A.m_cols == B.m_cols; }
 
-    double Matrix::maxItem()
+    double Matrix::maxItem() const
     {
         double max = (*this)[0][0];
         for (int i = 0; i < m_rows; ++i)
@@ -64,7 +64,7 @@ namespace luMath
                     max = (*this)[i][j];
         return max;
     }
-    double Matrix::minItem()
+    double Matrix::minItem() const
     {
         double min = (*this)[0][0];
         for (int i = 0; i < m_rows; ++i)
@@ -87,7 +87,7 @@ namespace luMath
         else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
                        << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
                        << "\tС данными матрицами операция сложения не может быть произведена. (возвращается первый операнд)" << std::endl;
-        return A;//?
+        return A;
     }
     Matrix operator-(const Matrix& A, const Matrix& B)
     {
@@ -102,7 +102,7 @@ namespace luMath
         else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
                        << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
                        << "\tС данными матрицами операция вычитания не может быть произведена. (возвращается первый операнд)" << std::endl;
-        return A;//?
+        return A;
     }
     Matrix operator*(const Matrix& A, const Matrix& B)
     {
@@ -140,7 +140,7 @@ namespace luMath
         for (int i = 0; i < matrix.m_rows; ++i)
         {
             for (int j = 0; j < matrix.m_cols; ++j)
-                out << std::fixed << std::setprecision(2) << std::setw(7) << matrix[i][j] << " ";
+                out << std::fixed << std::setprecision(2) << std::setw(7) << matrix[i][j];
             std::cout << std::endl;
         }
         return out;
@@ -166,16 +166,12 @@ namespace luMath
     }
     const Matrix& Matrix::operator+=(const Matrix& matrix)
     {
-        for (int i = 0; i < m_rows; ++i)
-            for (int j = 0; j < m_cols; ++j)
-                (*this)[i][j] += matrix[i][j];
+        (*this) = (*this) + matrix;
         return *this;
     }
     const Matrix& Matrix::operator-=(const Matrix& matrix)
     {
-        for (int i = 0; i < m_rows; ++i)
-            for (int j = 0; j < m_cols; ++j)
-                (*this)[i][j] -= matrix[i][j];
+        (*this) = (*this) - matrix;
         return *this;
     }
     const Matrix& Matrix::operator*=(const Matrix& matrix)
@@ -183,8 +179,7 @@ namespace luMath
         if (canMltpl(*this, matrix) && (*this).m_cols == matrix.m_cols)
         {
             Matrix C((*this).m_rows, matrix.m_cols); //Создание нового объекта
-            C = (*this) * matrix;
-            (*this) = C;
+            (*this) = (*this) * matrix;
         }
         else std::cout << "Объект #" << m_id        << ": m = " << m_rows        << " n = " << m_cols        << std::endl
                        << "Объект #" << matrix.m_id << ": m = " << matrix.m_rows << " n = " << matrix.m_cols << std::endl
@@ -193,17 +188,15 @@ namespace luMath
     }
     const Matrix& Matrix::operator*=(double k)
     {
-        for (int i = 0; i < m_rows; ++i)
-            for (int j = 0; j < m_cols; ++j)
-                (*this)[i][j] *= k;
+        (*this) = (*this) *  k;
         return *this;
     }
 
 
-    double& Matrix::Row::operator[](int col) { return r_col[col]; }
-    Matrix::Row& Matrix::operator[](int row) { return m_subrows[row]; }
+     double& Matrix::Row::operator[](int col) {/* if (col < m_cols)*/ return r_col[col]; }
+    Matrix::Row& Matrix::operator[](int row) { if(row < m_rows) return m_subrows[row];  }
 
-    double& Matrix::Row::operator[](int col) const { return r_col[col]; }
-    Matrix::Row& Matrix::operator[](int row) const { return m_subrows[row]; }
+    const double& Matrix::Row::operator[](int col) const { return r_col[col]; }
+    const Matrix::Row& Matrix::operator[](int row) const { return m_subrows[row]; }
 
 }
