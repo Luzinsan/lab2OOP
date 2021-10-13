@@ -296,12 +296,12 @@ namespace luMath
         try
         {
             if (row >= m_rows)
-                throw "\nНомер строки выходит за пределы матрицы.";
+                throw "\nНомер строки выходит за пределы матрицы #";
         }
         catch (const char* exception)
         {
             row = m_rows - 1;
-            std::cout << exception << "\tИсключение обработано: номер возвращаемой строки ->" << row << "\n";
+            std::cout << exception << m_id << "\tИсключение обработано: номер возвращаемой строки ->" << row << "\n";
         }
         
         /*Возвращаем анонимный объект с инициализацией его полей 
@@ -321,7 +321,7 @@ namespace luMath
         catch (const char* exception)
         {
             col = m_cols - 1;
-            std::cout << exception<< "\tИсключение обработано: номер возвращаемой константной строки ->" << col << "\n";
+            std::cout << exception << "\tИсключение обработано: номер возвращаемой константной строки ->" << col << "\n";
         }
         return p_row[col]; // возвращаем ссылку на col-элемент строки p_row
     }
@@ -330,12 +330,12 @@ namespace luMath
         try
         {
             if (row >= m_rows)
-                throw "\nНомер строки выходит за пределы матрицы.";
+                throw "\nНомер строки выходит за пределы матрицы #";
         }
         catch (const char* exception)
         {
             row = m_rows - 1;
-            std::cout << exception << "\tИсключение обработано: номер возвращаемой строки ->" << row << "\n";
+            std::cout << exception << m_id << "\tИсключение обработано: номер возвращаемой строки ->" << row << "\n";
         }
         return  Row(m_items + (row * m_cols), m_cols);
     }
