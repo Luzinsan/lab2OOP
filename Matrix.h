@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>//для std::ostream и std::istream
-
-namespace luMath 
+#include <iomanip>
+namespace luMath
 {
     class Matrix
     {
@@ -12,14 +12,14 @@ namespace luMath
 
         class Row;// подкласс строк матрицы (объявление)
         Row* m_subrows; // указатель на массив подкласса строк матрицы
-        class Row// подкласс строк матрицы (реализация)
+        class Row // подкласс строк матрицы (реализация)
         {
         public:
             double* r_col;
             Row() {}
             Row(int cols);
             double& operator[](int col);
-            double& operator[](int col) const;
+            const double& operator[](int col) const;
         };
 
     public:
@@ -30,15 +30,15 @@ namespace luMath
         Matrix(const Matrix& fromMatrix);
         ~Matrix();
         Row& operator[](int row);
-        Row& operator[](int row) const;
+        const Row& operator[](int row) const;
 
         // Проверка возможности перемножение матриц ... и сложения/вычитания их элементов
         friend bool canMltpl(const Matrix& A, const Matrix& B);
         friend bool canAdd(const Matrix& A, const Matrix& B);
 
         // Нахождение минимального/максимального значения матрицы
-        double maxItem();
-        double minItem();
+        double maxItem() const;
+        double minItem() const;
 
         // Перегрузка бинарных операторов для матриц (сложение, вычитание, умножение матрицб умножение матрицы на скаляр), если это возможно (проверка есть)
         friend Matrix operator+(const Matrix& A, const Matrix& B);
@@ -48,6 +48,7 @@ namespace luMath
 
         // Перегрузка оператора вывода/ввода матрицы
         friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix);
+       
         friend std::istream& operator>>(std::istream& in, Matrix& matrix);
 
         // Перегрузка оператора присваивания 
@@ -58,7 +59,7 @@ namespace luMath
         const Matrix& operator*=(const Matrix& matrix);
         const Matrix& operator*=(double k);
 
-       
+
     };
 
 }
