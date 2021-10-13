@@ -12,6 +12,23 @@ namespace luMath
         return out;
     }*/
 
+
+
+
+    /* необходимо реализовать так же перемещающие конструкции (конструктор перемещения и оператор перемещения=).*/
+
+    /* Все ошибки должны генерировать исключение (throw). 
+    Текст исключения должен кратко описывать причину ошибки 
+    и содержать ID объекта\объектов вызвавших генерацию исключения.*/
+
+    /* std::cout << setw(15) << M1; 
+        Нужно реализовать перегрузку оператора вывода на поток так, 
+        чтобы в случае, если ширина вывода не была задана (и равна значению по умолчанию 0), 
+        матрица выводилась со стандартным значением ширины (пусть 7 ), 
+        а в случае, если ширина задана (и отлична от 0), матрица выводилась бы с заданной пользовательской шириной.
+    */
+
+
     int Matrix::s_idGenerator = 1;
 
     Matrix::Matrix() : Matrix(5, 5) 
@@ -26,8 +43,6 @@ namespace luMath
     }
     Matrix::Matrix(int rows, int cols) : m_rows{ rows }, m_cols{ cols }, m_id{ s_idGenerator++ }
     {
-
-        //////////////////////////////////
         std::cout << "Конструктор с параметрами. Создание объекта #" << m_id 
             << ": m = " << m_rows 
             << ", n = " << m_cols 
@@ -37,7 +52,9 @@ namespace luMath
         for (int i = 0; i < m_cols * m_rows; i++)
             m_items[i] = rand() % 10;// + rand() % 100 * 0.01;
     }
-    Matrix::Matrix(const Matrix& fromMatrix) : m_rows{ fromMatrix.m_rows }, m_cols{ fromMatrix.m_cols }, m_id{ s_idGenerator++ }
+
+    Matrix::Matrix(const Matrix& fromMatrix) : 
+        m_rows{ fromMatrix.m_rows }, m_cols{ fromMatrix.m_cols }, m_id{ s_idGenerator++ }
     {
         std::cout << "Создан объект #" << m_id << std::endl
             << "Конструктор глубокого копирования. Копируется объект #" << fromMatrix.m_id 
@@ -121,7 +138,6 @@ namespace luMath
                        << "\tС данными матрицами операция вычитания не может быть произведена. (возвращается первый операнд)" << std::endl;
         return A;
     }
-    
     Matrix operator*(const Matrix& A, const Matrix& B)
     {
         if (canMltpl(A, B))
@@ -197,7 +213,7 @@ namespace luMath
     }
     const Matrix& Matrix::operator*=(const Matrix& matrix)
     {
-        if (canMltpl(*this, matrix) && (*this).m_cols == matrix.m_cols)
+        if (canMltpl(*this, matrix) && m_cols == matrix.m_cols)
         {
             Matrix C(m_rows, matrix.m_cols);
             (*this) = (*this) * matrix;
@@ -212,7 +228,6 @@ namespace luMath
         (*this) = (*this) *  k;
         return *this;
     }
-
 
     double& Matrix::Row::operator[](int col) 
     {
@@ -235,11 +250,9 @@ namespace luMath
         if (col < m_cols)
             return p_row[col];
     }
-
     const Matrix::Row Matrix::operator[](int row) const 
     { 
         if (row < m_rows)
             return  Row(m_items + (row * m_cols), m_cols);
     }
-
 }
