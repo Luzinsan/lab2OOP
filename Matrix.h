@@ -19,6 +19,7 @@ namespace luMath
         public:
 
             Row(double* row, int m_cols);
+            ~Row();
             double& operator[](int col);
             const double& operator[](int col) const;
         };
