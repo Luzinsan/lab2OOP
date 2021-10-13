@@ -5,51 +5,39 @@
 
 namespace luMath
 {
+    //static std::_Smanip<std::streamsize> _cdecl size = static_cast<std::_Smanip<std::streamsize>>(7);
+   /* std::ostream& operator<<(std::ostream& out, std::_Smanip<std::streamsize> _cdecl size)
+    {
+        out << std::fixed << std::setprecision(2) << size;
+        return out;
+    }*/
+
     int Matrix::s_idGenerator = 1;
 
     Matrix::Matrix() : Matrix(5, 5) { std::cout << "Произошло делегирование конструктора по умолчанию конструктору с параметрами." << std::endl; }
     Matrix::Matrix(int rows) : Matrix(rows, rows) {  std::cout << "Произошло делегирование конструктора квадратной матрицы конструктору с параметрами." << std::endl; }
-    Matrix::Row::Row(int cols)
+    Matrix::Matrix(int rows, int cols) : m_rows{ rows }, m_cols{ cols }, m_id{ s_idGenerator++ }
     {
-        r_col = new double[cols];
-        for (int i = 0; i < cols; i++)
-            r_col[i] = rand() % 100 + rand() % 100 * 0.01;
-    }
-    Matrix::Matrix(int rows, int cols) : m_id{ s_idGenerator++ }
-    {
-        rows < 1 ? m_rows = 1 : m_rows = rows; 
-        cols < 1 ? m_cols = 1 : m_cols = cols;
         std::cout << "Конструктор с параметрами. Создание объекта #" << m_id << ": m = " << m_rows << ", n = " << m_cols << std::endl;
-        m_subrows = new Row[m_rows];
-        for (int i = 0; i < m_rows; ++i)
-            m_subrows[i] = Row(m_cols);
+        m_items = new double[m_rows * m_cols];
+        for(int i = 0; i < m_cols * m_rows; i++)
+            m_items[i] = rand() % 100 + rand() % 100 * 0.01;
     }
     Matrix::Matrix(const Matrix& fromMatrix) : m_rows{ fromMatrix.m_rows }, m_cols{ fromMatrix.m_cols }, m_id{ s_idGenerator++ }
     {
-        std::cout << "Создан объект #" << m_id << std::endl;
-        std::cout << "Конструктор глубокого копирования. Копируется объект #" << fromMatrix.m_id << " в объект #" << m_id << std::endl;
-
-        m_subrows = new Row[m_rows];
+        std::cout << "Создан объект #" << m_id << std::endl
+            << "Конструктор глубокого копирования. Копируется объект #" << fromMatrix.m_id << " в объект #" << m_id << std::endl;
+        m_items = new double[m_rows * m_cols];
         for (int i = 0; i < m_rows; ++i)
-        {
-            m_subrows[i] = Row(m_cols);
             for (int j = 0; j < m_cols; ++j)
-                (*this)[i][j] = fromMatrix[i][j];
-        }
+                m_items[i * m_cols + j] = fromMatrix.m_items[i * m_cols + j];
     }
+    Matrix::Row::Row(double* row) : p_row{ row } {}
 
     Matrix::~Matrix()
     {
         std::cout << "Деструктор объекта #" << m_id << std::endl;
-        for (int i = 0; i < m_rows; ++i)
-            if (m_subrows[i].r_col != nullptr)
-                delete[](m_subrows[i].r_col);
-        if (m_subrows != nullptr)
-            delete[] m_subrows;
-        
-        m_subrows = nullptr;
-        m_rows = 0; m_cols = 0; m_id = 0;
-        std::cout << std::endl;
+        delete[] m_items;
     }
 
     bool canMltpl(const Matrix& A, const Matrix& B) { return A.m_cols == B.m_rows; }
@@ -57,20 +45,20 @@ namespace luMath
 
     double Matrix::maxItem() const
     {
-        double max = (*this)[0][0];
+        double max = (*this).m_items[0];
         for (int i = 0; i < m_rows; ++i)
             for (int j = 0; j < m_cols; ++j)
-                if (max < (*this)[i][j])
-                    max = (*this)[i][j];
+                if (max < (*this).m_items[i * m_cols + j])
+                    max = (*this).m_items[i * m_cols + j];
         return max;
     }
     double Matrix::minItem() const
     {
-        double min = (*this)[0][0];
+        double min = (*this).m_items[0];
         for (int i = 0; i < m_rows; ++i)
             for (int j = 0; j < m_cols; ++j)
-                if (min > (*this)[i][j])
-                    min = (*this)[i][j];
+                if (min > (*this).m_items[i * m_cols + j])
+                    min = (*this).m_items[i * m_cols + j];
         return min;
     }
 
@@ -81,7 +69,7 @@ namespace luMath
             Matrix C(A.m_rows, A.m_cols); //Создание нового объекта
             for (int i = 0; i < C.m_rows; ++i)
                 for (int j = 0; j < C.m_cols; ++j)
-                    C[i][j] = A[i][j] + B[i][j];
+                    C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j] + B.m_items[i * B.m_cols + j];
             return C;
         }
         else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
@@ -93,10 +81,10 @@ namespace luMath
     {
         if (canAdd(A, B))
         {
-            Matrix C(A.m_rows, A.m_cols); //Создание нового объекта
+            Matrix C(A.m_rows, A.m_cols); 
             for (int i = 0; i < C.m_rows; ++i)
                 for (int j = 0; j < C.m_cols; ++j)
-                    C[i][j] = A[i][j] - B[i][j];
+                    C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j] - B.m_items[i * B.m_cols + j];
             return C;
         }
         else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
@@ -104,53 +92,55 @@ namespace luMath
                        << "\tС данными матрицами операция вычитания не может быть произведена. (возвращается первый операнд)" << std::endl;
         return A;
     }
+    
     Matrix operator*(const Matrix& A, const Matrix& B)
     {
         if (canMltpl(A, B))
         {
             double temp = 0;
-            Matrix C(A.m_rows, B.m_cols); //Создание нового объекта
+            Matrix C(A.m_rows, B.m_cols); 
             for (int i = 0; i < C.m_rows; ++i)
                 for (int j = 0; j < C.m_cols; ++j)
                 {
                     temp = 0;
                     for (int k = 0; k < B.m_rows; ++k)
-                        temp += A[i][k] * B[k][j];
-                    C[i][j] = temp;
+                        temp += A.m_items[i * A.m_cols + k] * B.m_items[k * B.m_cols + j];
+                    C.m_items[i * C.m_cols + j] = temp;
                 }
             return C;
         }
         else std::cout << "Объект #" << A.m_id << ": m = " << A.m_rows << " n = " << A.m_cols << std::endl
                        << "Объект #" << B.m_id << ": m = " << B.m_rows << " n = " << B.m_cols << std::endl
                        << "\tС данными матрицами операция умножения не может быть произведена. (возвращается первый операнд)" << std::endl;
-        return A;//?
+        return A;
     }
     Matrix operator*(const Matrix& A, double k)
     {
         Matrix C(A.m_rows, A.m_cols); //Создание нового объекта
         for (int i = 0; i < C.m_rows; ++i)
             for (int j = 0; j < C.m_cols; ++j)
-                C[i][j] = A[i][j] * k;
+                C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j] * k;
         return C;
     }
 
-    std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    std::ostream& operator<<(std::ostream& out, const Matrix& matrix)/////////////////////////////////////////////////////
     {
-        std::cout << std::endl;
+        out << "\n";
         for (int i = 0; i < matrix.m_rows; ++i)
         {
             for (int j = 0; j < matrix.m_cols; ++j)
-                out << std::fixed << std::setprecision(2) << std::setw(7) << matrix[i][j];
-            std::cout << std::endl;
+                out << std::fixed << std::setprecision(2) << std::setw(7) << matrix.m_items[i * matrix.m_cols + j];
+            out << "\n";
         }
         return out;
     }
+    
     std::istream& operator>>(std::istream& in, Matrix& matrix)
     {
         for (int i = 0; i < matrix.m_rows; ++i)
             for (int j = 0; j < matrix.m_cols; ++j)
-                in >> matrix[i][j];
-        
+                in >> matrix.m_items[i * matrix.m_cols + j];
         return in;
     }
 
@@ -158,10 +148,10 @@ namespace luMath
     {
         if (this == &matrix)
             return *this;
-        if((*this).m_rows == matrix.m_rows &&  (*this).m_cols == matrix.m_cols)
+        if(m_rows == matrix.m_rows &&  m_cols == matrix.m_cols)
             for (int i = 0; i < matrix.m_rows; ++i)
                 for (int j = 0; j < matrix.m_cols; ++j)
-                    (*this)[i][j] = matrix[i][j];
+                    m_items[i * m_cols + j] = matrix.m_items[i * matrix.m_cols + j];
         return *this;
     }
     const Matrix& Matrix::operator+=(const Matrix& matrix)
@@ -178,7 +168,7 @@ namespace luMath
     {
         if (canMltpl(*this, matrix) && (*this).m_cols == matrix.m_cols)
         {
-            Matrix C((*this).m_rows, matrix.m_cols); //Создание нового объекта
+            Matrix C(m_rows, matrix.m_cols); //Создание нового объекта
             (*this) = (*this) * matrix;
         }
         else std::cout << "Объект #" << m_id        << ": m = " << m_rows        << " n = " << m_cols        << std::endl
@@ -193,10 +183,28 @@ namespace luMath
     }
 
 
-     double& Matrix::Row::operator[](int col) {/* if (col < m_cols)*/ return r_col[col]; }
-    Matrix::Row& Matrix::operator[](int row) { if(row < m_rows) return m_subrows[row];  }
+    double& Matrix::Row::operator[](int col) 
+    {
+        /* if (col < m_cols)*/ 
+        return p_row[col]; 
+    }
+    Matrix::Row Matrix::operator[](int row) 
+    { 
+        if (row < m_rows)
+            return  Row(m_items + (row * m_cols));
+    
+    }
 
-    const double& Matrix::Row::operator[](int col) const { return r_col[col]; }
-    const Matrix::Row& Matrix::operator[](int row) const { return m_subrows[row]; }
+    const double& Matrix::Row::operator[](int col) const 
+    { 
+        /* if (col < m_cols)*/
+        return p_row[col];
+    }
+
+    const Matrix::Row Matrix::operator[](int row) const 
+    { 
+        if (row < m_rows)
+            return  Row(m_items + (row * m_cols));
+    }
 
 }
