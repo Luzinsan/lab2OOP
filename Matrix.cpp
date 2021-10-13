@@ -34,8 +34,8 @@ namespace luMath
             << std::endl;
 
         m_items = new double[m_rows * m_cols];
-        for(int i = 0; i < m_cols * m_rows; i++)
-            m_items[i] = rand() % 100 + rand() % 100 * 0.01;
+        for (int i = 0; i < m_cols * m_rows; i++)
+            m_items[i] = rand() % 10;// + rand() % 100 * 0.01;
     }
     Matrix::Matrix(const Matrix& fromMatrix) : m_rows{ fromMatrix.m_rows }, m_cols{ fromMatrix.m_cols }, m_id{ s_idGenerator++ }
     {
@@ -48,9 +48,16 @@ namespace luMath
             for (int j = 0; j < m_cols; j++)
                 m_items[i * m_cols + j] = fromMatrix.m_items[i * m_cols + j];
     }
-    Matrix::Row::Row(double* row, int cols) : p_row{ row }, m_cols{cols} {}
+    Matrix::Row::Row(double* row, int cols) : p_row{ row }, m_cols{ cols } { }
     
-    Matrix::Row::~Row() { delete p_row; }
+    Matrix::Row::~Row() 
+    {  
+        /*
+        * Не вызываем delete для p_row, так как нам ещё нужна ячейка, 
+        * куда указывал p_row(через m_items мы ещё держим контроль 
+        * над этой областью памяти - утечки не происходит)
+        */
+    }
     Matrix::~Matrix()
     {
         std::cout << "Деструктор объекта #" << m_id << std::endl;
