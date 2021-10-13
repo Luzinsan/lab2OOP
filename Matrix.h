@@ -9,15 +9,15 @@ namespace luMath
         static int s_idGenerator;
         int m_id;
         int m_rows, m_cols;
+        double* m_items;
 
-        class Row;// подкласс строк матрицы (объявление)
-        Row* m_subrows; // указатель на массив подкласса строк матрицы
-        class Row // подкласс строк матрицы (реализация)
+        class Row
         {
+        private:
+            double* p_row;
         public:
-            double* r_col;
-            Row() {}
-            Row(int cols);
+
+            Row(double* row);
             double& operator[](int col);
             const double& operator[](int col) const;
         };
@@ -29,8 +29,8 @@ namespace luMath
         Matrix(int rows, int cols);
         Matrix(const Matrix& fromMatrix);
         ~Matrix();
-        Row& operator[](int row);
-        const Row& operator[](int row) const;
+        Row operator[](int row);
+        const Row operator[](int row) const;
 
         // Проверка возможности перемножение матриц ... и сложения/вычитания их элементов
         friend bool canMltpl(const Matrix& A, const Matrix& B);
