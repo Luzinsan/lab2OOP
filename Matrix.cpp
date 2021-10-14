@@ -14,9 +14,6 @@ namespace luMath
 
 
 
-
-    /* необходимо реализовать также перемещающие конструкции (конструктор перемещения и оператор перемещения=).*/
-
     /* std::cout << setw(15) << M1; 
         Нужно реализовать перегрузку оператора вывода на поток так, 
         чтобы в случае, если ширина вывода не была задана (и равна значению по умолчанию 0), 
@@ -81,6 +78,17 @@ namespace luMath
         {
             std::cout << exception << "Объект №" << m_id << " НЕ был создан\n";
         }
+    }
+    Matrix::Matrix(Matrix&& fromMatrix) noexcept :
+        m_rows{ fromMatrix.m_rows }, 
+        m_cols{ fromMatrix.m_cols }, 
+        m_id{ s_idGenerator++ }, 
+        m_items{ fromMatrix.m_items}
+    {
+        fromMatrix.m_rows = 0;
+        fromMatrix.m_cols = 0;
+        fromMatrix.m_id = 0;
+        fromMatrix.m_items = nullptr;
     }
     Matrix::Row::Row(double* row, int cols) : p_row{ row }, m_cols{ cols } { }
     
@@ -154,7 +162,7 @@ namespace luMath
             if (!canAdd(A, B))
                 throw "\n\tС данными матрицами операция вычитания не может быть произведена. (возвращается левый операнд)\n";
 
-            Matrix C(A.m_rows, A.m_cols); //Создание нового объекта
+            Matrix C(A.m_rows, A.m_cols); 
             for (int i = 0; i < C.m_rows; i++)
                 for (int j = 0; j < C.m_cols; j++)
                     C.m_items[i * C.m_cols + j] = A.m_items[i * A.m_cols + j]
@@ -232,10 +240,48 @@ namespace luMath
     {
         if (this == &matrix)
             return *this;
-        if(m_rows == matrix.m_rows &&  m_cols == matrix.m_cols)
+
+        try
+        {
+            if (!(m_rows == matrix.m_rows && m_cols == matrix.m_cols))
+                throw "\nКопирующая операция присваивания не может быть произведена\n";
+
             for (int i = 0; i < matrix.m_rows; i++)
                 for (int j = 0; j < matrix.m_cols; j++)
                     m_items[i * m_cols + j] = matrix.m_items[i * matrix.m_cols + j];
+        }
+        catch (const char* exception)
+        {
+            std::cout << exception << "С матрицей №" << matrix.m_id << " в матрицу №" << m_id << "\n";
+        }
+        return *this;
+    }
+    Matrix& Matrix::operator=(Matrix&& matrix) 
+    {
+        if (this == &matrix)
+            return *this;
+
+        try 
+        {
+            if (!(m_rows == matrix.m_rows && m_cols == matrix.m_cols))
+                throw "\nПеремещающая операция присваивания не может быть произведена\n";
+        
+            delete[] m_items;
+            m_items = matrix.m_items;
+            m_cols = matrix.m_cols;
+            m_rows = matrix.m_rows;
+            m_id = matrix.m_id;
+            
+            matrix.m_cols = 0;
+            matrix.m_rows = 0;
+            matrix.m_id = 0;
+            matrix.m_items = nullptr;
+        }
+        catch(const char* exception)
+        {
+            std::cout << exception << "С матрицей №" << matrix.m_id << " в матрицу №" << m_id << "\n";
+        }
+        
         return *this;
     }
     const Matrix& Matrix::operator+=(const Matrix& matrix)
