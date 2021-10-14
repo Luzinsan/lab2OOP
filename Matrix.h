@@ -29,6 +29,7 @@ namespace luMath
         Matrix(int rows); // Конструктор квадратной матрицы
         Matrix(int rows, int cols); // Конструктор прямоугольной матрицы
         Matrix(const Matrix& fromMatrix); // Копирующий конструктор
+        Matrix(Matrix&& fromMatrix) noexcept; // Копирующий конструктор
         ~Matrix();
         Row operator[](int row); // Конструктор создания временной строки (без выделения памяти)
         const Row operator[](int row) const;
@@ -54,6 +55,9 @@ namespace luMath
 
         // Перегрузка оператора присваивания(копирования) 
         const Matrix& operator=(const Matrix& matrix);
+        // Перегрузка оператора присваивания(перемещающего) 
+        Matrix& operator=(Matrix&& matrix);
+
         // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием(копированием) 
         const Matrix& operator+=(const Matrix& matrix);
         const Matrix& operator-=(const Matrix& matrix);
