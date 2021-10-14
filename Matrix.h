@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>//для std::ostream и std::istream
+#include <iomanip>//для setw()
 
 namespace luMath
 {
