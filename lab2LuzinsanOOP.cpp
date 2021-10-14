@@ -1,6 +1,8 @@
 #include "Matrix.h"
-
+#include <iomanip>
 using namespace luMath;
+
+
 
 int main()
 {
@@ -10,7 +12,7 @@ int main()
     rand();
 
     Matrix asterix;
-    std::cout << "asterix: \n" << asterix << std::endl;
+    std::cout << "asterix: \n" << std::setw(25) << asterix << std::endl;
     
     Matrix masterix(8);
     std::cout << "masterix: \n" << masterix << std::endl;
@@ -63,7 +65,10 @@ int main()
     std::cin >> matrix6;
     std::cout << "matrix6: \n" << matrix5 << "*=" << matrix6 << '=' << std::endl;
     matrix5 *= matrix6;
-    std::cout << matrix5 << std::endl;
+    matrix5[2][3] = 6;
+    const Matrix mamAtrix(matrix5);
+    std::cout << std::setw(15) << mamAtrix << "\n" << matrix5[2][2] << '\n';
+    
 
     return 0;
 }
