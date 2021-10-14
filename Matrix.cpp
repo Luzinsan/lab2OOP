@@ -1,6 +1,4 @@
 #include "Matrix.h"
-#include <iostream>
-#include <iomanip>
 #include <ctime>
 
 namespace luMath
