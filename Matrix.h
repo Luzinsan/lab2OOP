@@ -54,9 +54,9 @@ namespace luMath
         friend std::istream& operator>>(std::istream& in, Matrix& matrix);
 
         // Перегрузка оператора присваивания(копирования) 
-        const Matrix& operator=(const Matrix& matrix);
+        const Matrix& operator=(const Matrix& matrix) ;
         // Перегрузка оператора присваивания(перемещающего) 
-        Matrix& operator=(Matrix&& matrix);
+        Matrix& operator=(Matrix&& matrix) noexcept;
 
         // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием(копированием) 
         const Matrix& operator+=(const Matrix& matrix);
