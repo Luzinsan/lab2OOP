@@ -1,8 +1,5 @@
 #include "Matrix.h"
-#include <iomanip>
 using namespace luMath;
-
-
 
 int main()
 {
