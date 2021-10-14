@@ -5,23 +5,6 @@
 
 namespace luMath
 {
-    //static std::_Smanip<std::streamsize> _cdecl size = static_cast<std::_Smanip<std::streamsize>>(7);
-   /* std::ostream& operator<<(std::ostream& out, std::_Smanip<std::streamsize> _cdecl size)
-    {
-        out << std::fixed << std::setprecision(2) << size;
-        return out;
-    }*/
-
-
-
-    /* std::cout << setw(15) << M1; 
-        Нужно реализовать перегрузку оператора вывода на поток так, 
-        чтобы в случае, если ширина вывода не была задана (и равна значению по умолчанию 0), 
-        матрица выводилась со стандартным значением ширины (пусть 7 ), 
-        а в случае, если ширина задана (и отлична от 0), матрица выводилась бы с заданной пользовательской шириной.
-    */
-
-
     int Matrix::s_idGenerator = 1;
 
     Matrix::Matrix() : Matrix(5, 5) 
@@ -87,7 +70,7 @@ namespace luMath
     {
         fromMatrix.m_rows = 0;
         fromMatrix.m_cols = 0;
-        fromMatrix.m_id = 0;
+        //fromMatrix.m_id = 0;
         fromMatrix.m_items = nullptr;
     }
     Matrix::Row::Row(double* row, int cols) : p_row{ row }, m_cols{ cols } { }
@@ -215,14 +198,18 @@ namespace luMath
         return C;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    std::ostream& operator<<(std::ostream& out, const Matrix& matrix)/////////////////////////////////////////////////////
+    
+    std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
     {
+        int size = std::cout.width();
         out << "\n";
         for (int i = 0; i < matrix.m_rows; i++)
         {
             for (int j = 0; j < matrix.m_cols; j++)
-                out << std::fixed << std::setprecision(2) << std::setw(7) << matrix.m_items[i * matrix.m_cols + j];
+                if(size)
+                    out << std::fixed << std::setprecision(2) << std::setw(size) << matrix.m_items[i * matrix.m_cols + j];
+                else
+                    out << std::fixed << std::setprecision(2) << std::setw(7)    << matrix.m_items[i * matrix.m_cols + j];
             out << "\n";
         }
         return out;
@@ -256,7 +243,7 @@ namespace luMath
         }
         return *this;
     }
-    Matrix& Matrix::operator=(Matrix&& matrix) 
+    Matrix& Matrix::operator=(Matrix&& matrix) noexcept
     {
         if (this == &matrix)
             return *this;
@@ -274,7 +261,7 @@ namespace luMath
             
             matrix.m_cols = 0;
             matrix.m_rows = 0;
-            matrix.m_id = 0;
+            //matrix.m_id = 0;
             matrix.m_items = nullptr;
         }
         catch(const char* exception)
