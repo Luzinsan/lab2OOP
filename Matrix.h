@@ -1,402 +1,81 @@
-#include "Matrix.h"
-#include <ctime>
-#include <iomanip>//для setw()
+#pragma once
+#include <iostream>          //для std::ostream и std::istream
+#include <initializer_list> // для std::initializer_list
 
 namespace luMath
 {
-    int Matrix::s_idGenerator = 1;
-
-
-    // Основной конструктор
-    Matrix::Matrix(int rows, int cols, const double* array) : m_rows{ rows }, m_cols{ cols }, m_id{ s_idGenerator++ }
+    class Matrix
     {
-        if (m_rows <= 0 || m_cols <= 0)
-            throw "Объект №", m_id, ". Размерность строк или столбцов не может быть меньше либо равным нулю. Обработка исключения: матрица 5x5";
+    private:
+        static int s_idGenerator;
+        int m_id;
+        int m_rows, m_cols;
+        double* m_items;
 
-        std::cout << "\n\tКонструктор создания матрицы с заданными значениями. Создание объекта #" << m_id
-            << ": m = " << m_rows
-            << ", n = " << m_cols
-            << std::endl;
-        m_items = new double[m_rows * m_cols];
+        class Row
+        {
+        private:
+            double* p_row;
+            int m_cols;
+        public:
+            Row(double* row, int m_cols);
+            ~Row();
+            double& operator[](int col);
+            const double& operator[](int col) const;
+        };
 
-        if (!m_items) throw "\n\t\tФатальное выделение памяти для объекта №", m_id, '\n';
-        for (int iii = 0; iii < m_rows * m_cols; ++iii)
-            m_items[iii] = array[iii];
+    public:
+        Matrix(); // Конструктор по умолчанию - создание матрицы 5x5 с рандомными значениями
+        Matrix(int rows); // Конструктор квадратной матрицы с рандомными значениями
+        Matrix(int rows, int cols); // Конструктор прямоугольной матрицы с рандомными значениями
+        
 
-    }
-
-
-    Matrix::Matrix() : Matrix(5, 5)
-    {
-        std::cout << "\n\tПроизошло делегирование конструктора по умолчанию конструктору с параметрами." << std::endl;
-    }
-
-
-    Matrix::Matrix(int rows) : Matrix(rows, rows)
-    {
-        std::cout << "\n\tПроизошло делегирование конструктора квадратной матрицы конструктору с параметрами." << std::endl;
-    }
-
-
-    Matrix::Matrix(int rows, int cols) : Matrix(rows, cols, new double[rows * cols])
-    {
-        for (int iii = 0; iii < m_cols * m_rows; ++iii)
-            m_items[iii] = rand() % 10;// + rand() % 100 * 0.01;
-        std::cout << "\n\tПроизошло делегирование конструктора с параметрами"
-            << "\n\tконструктору создания прямоугольной матрицы с заданными значениями." << std::endl;
-    }
-
-
-    Matrix::Matrix(int size, const double* array) : Matrix(size, size, array)
-    {
-        std::cout << "\n\tПроизошло делегирование конструктора создания квадратой матрицы с заданными значеними"
-            << "\n\tконструктору создания прямоугольной матрицы с заданными значениями." << std::endl;
-    }
-
-
-    Matrix::Matrix(int size, const std::initializer_list<double> list) : Matrix(size, size, list)
-    {
-        std::cout << "\n\tПроизошло делегирование конструктора создания квадратой матрицы со списком инициализации"
-            << "\n\t\tконструктору создания прямоугольной матрицы со списком инициализации." << std::endl;
-    }
-
-
-    Matrix::Matrix(const std::initializer_list<double> list)
-        : Matrix((sqrt(list.size()) - static_cast<int>(sqrt(list.size())) == 0) ? static_cast<int>(sqrt(list.size()))
-            : static_cast<int>(sqrt(list.size())) + 1,
-            (sqrt(list.size()) - static_cast<int>(sqrt(list.size())) == 0) ? static_cast<int>(sqrt(list.size()))
-            : static_cast<int>(sqrt(list.size())) + 1,
-            list)
-    {
-        std::cout << "\n\tКонструктор со списком инициализации делегировал создание "
-            << "\n\tконструктору создания прямоугольной матрицы со списком инициализации.";
-    }
-
-
-    /* {
-        {1,2,3,7}, 
-        {4,5,6}, 
-        {7,8,9}
-       }
-    */
-
-   /* Matrix::Matrix(const std::initializer_list<const std::initializer_list<double>> list)
-        : m_rows{ list.size() }, m_cols{ list.begin()->size() }
+        Matrix(int size,           const double* array); // Конструктор создания квадратной    матрицы с заданными значениями 
+        Matrix(int rows, int cols, const double* array); // Конструктор создания прямоугольной матрицы с заданными значениями 
+        Matrix(int size,           const std::initializer_list<double> list); // квадратной    матрицы с помощью списка инициализации
+        Matrix(int rows, int cols, const std::initializer_list<double> list); // прямоугольной матрицы с помощью списка инициализации
        
-    {
-        std::cout << "\n\tКонструктор со списком инициализации делегировал создание "
-            << "\n\tконструктору создания прямоугольной матрицы со списком инициализации.";
+        Matrix(int size,           double(*func)(int, int)); // Конструктор создания квадратной матрицы с помощью функции 
+        Matrix(int rows, int cols, double(*func)(int, int)); // Конструктор создания прямоугольной матрицы с помощью функции 
         
-        
-        int count;
-        for (int num_row = 0; list. [num_row] != list.end(); ++num_row)
-            if (m_cols < list.begin()[num_row]->size())
-                m_cols = list.begin()[num_row]->size();
-            
-            
-        
-        for (int num_row = 0; (list.begin())[num_row] != list.end(); ++num_row)
-        {
-            count = 0;
-            for (auto& element : *(list.begin()[num_row]))
-            {
-                m_items[count] = element;
-                count++;
-            }
-            for (; count < m_rows * m_cols; ++count)
-                m_items[count] = 0;
-        }
-        
+        Matrix(const std::initializer_list<double> list); // Конструктор со списком инициализации квадратной матрицы с автоматически заданным размером
+        //Matrix(const std::initializer_list<const std::initializer_list<double>> list);
 
-        std::cout << "\n\tКонструктор создания прямоугольной матрицы со списком инициализации проинициализировал элементы матрицы №"
-            << m_id << std::endl;
+        Matrix(const Matrix& fromMatrix) ;// Копирующий конструктор
+        Matrix(Matrix&& fromMatrix) noexcept;             // Конструктор перемещения
+        ~Matrix();
+        Row operator[](int row); // Конструктор создания временной строки
+        const Row operator[](int row) const;
 
-    }
-    
-    */
-    Matrix::Matrix(int rows, int cols, const std::initializer_list<double> list) : Matrix(rows, cols, new double[rows * cols])
-    {
-        std::cout << "\n\tПроизошло делегирование конструктора создания прямоугольной матрицы со списком инициализации"
-                                        << "\n\t\tконструктору создания прямоугольной матрицы c заданными значениями." << std::endl;
-        int count = 0;
-        for (auto& element : list)
-        {
-            m_items[count] = element;
-            count++;
-        }
-        for (; count < m_rows * m_cols; ++count)
-            m_items[count] = 0;
+        // Проверка возможности перемножение матриц и сложение/вычитания матриц
+        friend bool canMltpl(const Matrix& A, const Matrix& B);
+        friend bool canAdd(const Matrix& A, const Matrix& B);
 
-        std::cout << "\n\tКонструктор создания прямоугольной матрицы со списком инициализации проинициализировал элементы матрицы №" 
-                  << m_id << std::endl;
-    }
-    
+        // Нахождение минимального/максимального значения матрицы
+        static double maxItem(const Matrix& X);
+        static double minItem(const Matrix& X);
 
-    Matrix::Matrix(int size,            double(*func)(int rows, int cols))  : Matrix(size, size, func) 
-    { std::cout << "\n\tПроизошло делегирование конструктора создания квадратой матрицы с функцией"
-                  << "\n\t\tконструктору создания прямоугольной матрицы с функцией." << std::endl; }
-    
+        // Перегрузка бинарных операторов для матриц (сложение, вычитание, умножение матриц, умножение матрицы на скаляр)
+        friend Matrix operator+(const Matrix& A, const Matrix& B);
+        friend Matrix operator-(const Matrix& A, const Matrix& B);
+        friend Matrix operator*(const Matrix& A, const Matrix& B);
+        friend Matrix operator*(const Matrix& A, double k);
 
-    Matrix::Matrix(int rows,  int cols, double(*func)(int rows, int cols )) : Matrix(rows, cols, new double[rows * cols])
-    {
-        std::cout << "\n\tПроизошло делегирование конструктора создания прямоугольной матрицы с функцией"
-                  << "\n\t\tконструктору создания прямоугольной матрицы c заданными значениями." << std::endl;
-        for (int iii = 0; iii < m_rows; ++iii)
-            for (int jjj = 0; jjj < m_cols; ++jjj)
-                m_items[iii * m_cols + jjj] = func(iii, jjj);
-        std::cout << "\n\tКонструктор создания прямоугольной матрицы с функцией проинициализировал элементы матрицы №"
-                  << m_id << std::endl;
-    }
+        // Перегрузка оператора вывода/ввода матрицы
+        friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix);
+        friend std::istream& operator>>(std::istream& in, Matrix& matrix);
 
-    
-    Matrix::Matrix(const Matrix& fromMatrix) : Matrix(fromMatrix.m_rows, fromMatrix.m_cols, fromMatrix.m_items)
-    {
-        std::cout << "\n\tКонструктор глубокого копирования делегировал создание "
-                  << "\n\tконструктору создания прямоугольной матрицы с заданными значениями.";
-    }
+        // Перегрузка оператора присваивания(копирования) 
+        const Matrix& operator=(const Matrix& matrix) ;
+        // Перегрузка оператора присваивания(перемещающего) 
+        const Matrix& operator=(Matrix&& matrix) noexcept;
+        // Перегрузка оператора присваивания списком инициализации
+        const Matrix& operator=(const std::initializer_list<double> list);
 
-
-    Matrix::Matrix(Matrix&& fromMatrix) noexcept:
-        m_rows{ fromMatrix.m_rows }, 
-        m_cols{ fromMatrix.m_cols }, 
-        m_id{ s_idGenerator++ }, 
-        m_items{ fromMatrix.m_items }
-    {
-        fromMatrix.m_rows = 0;
-        fromMatrix.m_cols = 0;
-        fromMatrix.m_items = nullptr;
-    }
-
-
-    Matrix::Row::Row(double* row, int cols) : p_row{ row }, m_cols{ cols } { }
-    
-
-    Matrix::Row::~Row() 
-    {  
-        /*
-        * Не вызываем delete для p_row, так как нам ещё нужна ячейка, 
-        * куда указывал p_row(через m_items мы ещё держим контроль 
-        * над этой областью памяти - утечки не происходит)
-        */
-    }
-
-
-    Matrix::~Matrix()
-    {
-        std::cout << "\n\tДеструктор объекта #" << m_id << std::endl;
-        if(m_items != nullptr)
-            delete[] m_items;
-    }
-
-
-    bool canMltpl(const Matrix& A, const Matrix& B) 
-    { return A.m_cols == B.m_rows; }
-
-
-    bool canAdd(const Matrix& A, const Matrix& B) 
-    { return A.m_rows == B.m_rows && A.m_cols == B.m_cols; }
-
-
-    double Matrix::maxItem(const Matrix& X)
-    {
-        double max = X.m_items[0];
-        for (int iii = 0; iii < X.m_rows * X.m_cols; ++iii)
-            if (max < X.m_items[iii])
-                max = X.m_items[iii];
-        return max;
-    }
-
-
-    double Matrix::minItem(const Matrix& X)
-    {
-        double min = X.m_items[0];
-        for (int iii = 0; iii < X.m_rows * X.m_cols; ++iii)
-            if (min > X.m_items[iii])
-                min = X.m_items[iii];
-        return min;
-    }
-
-    Matrix operator+(const Matrix& A, const Matrix& B)
-    { return Matrix(A) += B; }
-    Matrix operator-(const Matrix& A, const Matrix& B)
-    { return Matrix(A) -= B; }
-    Matrix operator*(const Matrix& A, const Matrix& B)
-    { return Matrix(A) *= B; }
-    Matrix operator*(const Matrix& A, double k)
-    { return Matrix(A) *= k; }
-
-
-    std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
-    {
-        int size = static_cast<int>(std::cout.width());
-        out << "\n";
-        for (int i = 0; i < matrix.m_rows; i++)
-        {
-            for (int j = 0; j < matrix.m_cols; j++)
-                if(size) out << std::fixed << std::setprecision(2) << std::setw(size) << matrix.m_items[i * matrix.m_cols + j];
-                else     out << std::fixed << std::setprecision(2) << std::setw(10)    << matrix.m_items[i * matrix.m_cols + j];
-            out << "\n";
-        }
-        return out;
-    }
-
-    std::istream& operator>>(std::istream& in, Matrix& matrix)
-    {
-        for (int iii = 0; iii < matrix.m_rows * matrix.m_cols; ++iii)
-            in >> matrix.m_items[iii];
-        return in;
-    }
-
-
-    const Matrix& Matrix::operator=(const Matrix& matrix)
-    {
-        if (this == &matrix)
-            return *this;
-
-
-        if (m_cols * m_rows != matrix.m_rows * matrix.m_cols)
-        {
-            m_cols = matrix.m_cols;
-            m_rows = matrix.m_rows;
-            delete[] m_items;
-            m_items = new double[m_cols * m_rows];
-        }
-        
-        for (int iii = 0; iii < m_rows * m_cols; ++iii)
-            m_items[iii] = matrix.m_items[iii];
-        return *this;
-    }
-
-
-    const Matrix& Matrix::operator=(Matrix&& matrix) noexcept
-    {
-        if (this == &matrix)
-            return *this;
-
-        m_cols = matrix.m_cols;
-        m_rows = matrix.m_rows;
-        m_id = matrix.m_id;
-        delete[] m_items;
-        m_items = matrix.m_items;
-        matrix.m_cols = 0;
-        matrix.m_rows = 0;
-        matrix.m_items = nullptr;
-        return *this;
-    }
-
-
-    const Matrix& Matrix::operator=(const std::initializer_list<double> list)
-    {
-        if (list.size() != static_cast<size_t>(m_rows * m_cols))
-        {
-            delete[] m_items;
-           
-
-            m_rows = (sqrt(list.size()) - static_cast<int>(sqrt(list.size())) == 0) ? static_cast<int>(sqrt(list.size()))
-                                                                                    : static_cast<int>(sqrt(list.size())) + 1;
-            m_cols = m_rows;
-            m_items = new double[m_rows * m_cols];
-        }
-        int count = 0;
-        for (auto& element : list)
-        {
-            m_items[count] = element;
-            count++;
-        }
-        for (; count < m_rows * m_cols; ++count)
-            m_items[count] = 0;
-        return *this;
-    }
-
-
-    const Matrix& Matrix::operator+=(const Matrix& matrix)
-    {
-        
-        if (!canAdd(*this, matrix))
-            throw "\nМатрица №",            m_id, ": m = ",        m_rows, "; n = ",        m_cols,
-                    "\nи матрица №", matrix.m_id, ": m = ", matrix.m_rows, "; n = ", matrix.m_cols,
-                    ".\nС данными матрицами операция сложения не может быть произведена.\t(возвращается левый операнд)\n";
-
-        for (int iii = 0; iii < m_rows*m_cols; ++iii)
-            m_items[iii] += matrix.m_items[iii];
-        
-        return *this;
-    }
-
-
-    const Matrix& Matrix::operator-=(const Matrix& matrix)
-    {
-        
-        if (!canAdd(*this, matrix))
-            throw "\nМатрица №",            m_id, ": m = ",        m_rows, "; n = ",        m_cols,
-                    "\nи матрица №", matrix.m_id, ": m = ", matrix.m_rows, "; n = ", matrix.m_cols,
-                    ".\nС данными матрицами разности сложения не может быть произведена.\t(возвращается левый операнд)\n";
-
-        for (int iii = 0; iii < m_rows * m_cols; ++iii)
-            m_items[iii] -= matrix.m_items[iii];
-        
-        return *this;
-    }
-
-
-    const Matrix& Matrix::operator*=(const Matrix& matrix)
-    {
-        
-        if (!(canMltpl(*this, matrix) && m_cols == matrix.m_cols))
-            throw "\nМатрица №",          m_id, ": m = ",        m_rows, "; n = ",        m_cols,
-                    "\nи матрица №", matrix.m_id, ": m = ", matrix.m_rows, "; n = ", matrix.m_cols,
-                    ".\nС данными матрицами операция умножения не может быть произведена, \n";
-                    "либо размерность полученной матрицы не совпадает с размерностью левого операнда.\n\t(возвращается левый операнд)";
-
-        double temp;
-        double* array = new double[m_rows * matrix.m_cols];
-        for (int iii = 0; iii < m_rows; ++iii)
-            for (int jjj = 0; jjj < matrix.m_cols; ++jjj)
-            {
-                temp = 0;
-                for (int kkk = 0; kkk < matrix.m_rows; ++kkk)
-                    temp +=        m_items[iii *        m_cols + kkk]
-                          * matrix.m_items[kkk * matrix.m_cols + jjj];
-                array[iii * matrix.m_cols + jjj] = temp;
-            }
-        delete[] this->m_items;
-        this->m_items = array;
-        
-        return *this;
-    }
-
-
-    const Matrix& Matrix::operator*=(double k)
-    {
-        for (int iii = 0; iii < m_rows*m_cols; ++iii)
-            m_items[iii] *= k;
-        return *this;
-    }
-
-    double& Matrix::Row::operator[](int col) 
-    {
-        if (col >= m_cols) throw "\n\tНомер столбца выходит за пределы матрицы\n";
-        return p_row[col]; // возвращаем ссылку на col-элемент строки p_row
-    }
-    Matrix::Row Matrix::operator[](int row) 
-    { 
-        if (row >= m_rows) throw "\n\tНомер строки выходит за пределы матрицы #", m_id,'\n';
-        
-        /*Возвращаем анонимный объект с инициализацией его полей 
-        1) указателем на нужную строку (строку row)
-        2) и кол-вом столбцов для проверки правильности обращения к элементу строки в последствии 
-        ***После создания анонимного объекта применяется перегрузка оператора[] в подклассе Row */
-        return  Row(m_items + (row * m_cols), m_cols); 
-    }
-
-    const double& Matrix::Row::operator[](int col) const 
-    { 
-        if (col >= m_cols) throw "\n\tНомер столбца выходит за пределы матрицы.\n";
-        return p_row[col]; // возвращаем ссылку на col-элемент строки p_row
-    }
-    const Matrix::Row Matrix::operator[](int row) const 
-    { 
-        if (row >= m_rows) throw "\n\tНомер строки выходит за пределы матрицы #", m_id, '\n';
-        return  Row(m_items + (row * m_cols), m_cols);
-    }
+        // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием(копированием) 
+        const Matrix& operator+=(const Matrix& matrix);
+        const Matrix& operator-=(const Matrix& matrix);
+        const Matrix& operator*=(const Matrix& matrix);
+        const Matrix& operator*=(double k);
+    };
 }
