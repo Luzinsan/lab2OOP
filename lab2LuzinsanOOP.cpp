@@ -18,6 +18,7 @@ int main()
     Matrix matrix9({ 11,12,13,14,15,16,17,18,19,20 });
     std::cout << "matrix9: \n" << matrix9 << std::endl;
 
+    matrix0 = matrix9;
     
     Matrix asterix;
     std::cout << "asterix: \n" << std::setw(25) << asterix << std::endl;
@@ -40,8 +41,8 @@ int main()
     Matrix matrix2(matrix * masterix);
     std::cout << "matrix2: \n" << matrix << '*' << masterix << "=" << matrix2 << std::endl;
 
-    std::cout << "The max item of matrix2: \n" << matrix2 << "\t\tis " << matrix2.maxItem() << std::endl;
-    std::cout << "The min item of matrix2: \n" << matrix2 << "\t\tis " << matrix2.minItem() << std::endl;
+    std::cout << "The max item of matrix2: \n" << matrix2 << "\t\tis " << Matrix::maxItem(matrix2) << std::endl;
+    std::cout << "The min item of matrix2: \n" << matrix2 << "\t\tis " << Matrix::minItem(matrix2) << std::endl;
     int k = 3;
     Matrix matrix3(matrix * k);
     std::cout << "matrix3: \n" << matrix << '*' << k << "\n=" << matrix3 << std::endl;
@@ -61,11 +62,16 @@ int main()
     matrix4 *= masterix;
     std::cout << matrix4 << std::endl;
 
-    std::cout << "matrix4: \n" << matrix4 << "*=" << k << "\n=" << std::endl;
+    std::cout << "matrix4: \n" << matrix4 << '*' << k << "=\n" << std::endl;
     matrix4 *= k;
     std::cout << matrix4 << std::endl;
-
-    std::cout << "matrix4[3][7]: \n" << matrix4[3][7] << std::endl;
+    try { std::cout << "matrix4[3][7]: \n" << matrix4[3][7] << std::endl;}
+    catch (const char* exception)
+    {
+        std::cout << exception << "\tИсключение обработано: будет выведен элемент: matrix4[2][2]  ->" << '\t'
+                  << matrix4[2][2] << std::endl;
+    }
+    
 
     Matrix matrix5(3);
     std::cin >> matrix5;
@@ -76,7 +82,7 @@ int main()
     std::cout << "matrix5: \n" << matrix5 << "*=" << matrix6 << '=' << std::endl;
     matrix5 *= matrix6;
     std::cout << "matrix5: \n" << matrix5 << std::endl;
-    matrix5[2][3] = 6;
+    matrix5[2][2] = 6;
     const Matrix mamAtrix(matrix5);
     std::cout << std::setw(15) << mamAtrix << "\n" << matrix5[2][2] << '\n';
 
