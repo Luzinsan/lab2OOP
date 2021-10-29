@@ -32,14 +32,14 @@ namespace luMath
 
         Matrix(int size,           const double* array); // Конструктор создания квадратной    матрицы с заданными значениями 
         Matrix(int rows, int cols, const double* array); // Конструктор создания прямоугольной матрицы с заданными значениями 
-        Matrix(int size,           const std::initializer_list<double>& list); // квадратной    матрицы с помощью списка инициализации
-        Matrix(int rows, int cols, const std::initializer_list<double>& list); // прямоугольной матрицы с помощью списка инициализации
+        Matrix(int size,           const std::initializer_list<double> list); // квадратной    матрицы с помощью списка инициализации
+        Matrix(int rows, int cols, const std::initializer_list<double> list); // прямоугольной матрицы с помощью списка инициализации
        
         Matrix(int size,           double(*func)(int, int)); // Конструктор создания квадратной матрицы с помощью функции 
         Matrix(int rows, int cols, double(*func)(int, int)); // Конструктор создания прямоугольной матрицы с помощью функции 
         
-        Matrix(const std::initializer_list<double>& list); // Конструктор со списком инициализации квадратной матрицы с автоматически заданным размером
-
+        Matrix(const std::initializer_list<double> list); // Конструктор со списком инициализации квадратной матрицы с автоматически заданным размером
+        //Matrix(const std::initializer_list<const std::initializer_list<double>> list);
 
         Matrix(const Matrix& fromMatrix) ;// Копирующий конструктор
         Matrix(Matrix&& fromMatrix) noexcept;             // Конструктор перемещения
@@ -52,8 +52,8 @@ namespace luMath
         friend bool canAdd(const Matrix& A, const Matrix& B);
 
         // Нахождение минимального/максимального значения матрицы
-        double maxItem() const;
-        double minItem() const;
+        static double maxItem(const Matrix& X);
+        static double minItem(const Matrix& X);
 
         // Перегрузка бинарных операторов для матриц (сложение, вычитание, умножение матриц, умножение матрицы на скаляр)
         friend Matrix operator+(const Matrix& A, const Matrix& B);
@@ -70,7 +70,7 @@ namespace luMath
         // Перегрузка оператора присваивания(перемещающего) 
         const Matrix& operator=(Matrix&& matrix) noexcept;
         // Перегрузка оператора присваивания списком инициализации
-        const Matrix& operator=(const std::initializer_list<double>& list);
+        const Matrix& operator=(const std::initializer_list<double> list);
 
         // Перегрузка оператора суммы/разности/умножения_матриц/умножения_на_скаляр с присваиванием(копированием) 
         const Matrix& operator+=(const Matrix& matrix);
