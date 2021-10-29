@@ -254,7 +254,7 @@ namespace luMath
             return *this;
 
 
-        if (m_cols * m_rows != matrix.m_rows * matrix.m_cols)
+        if (m_cols * m_rows != matrix.m_rows * matrix.m_cols) // 4x5 != 5x4 - ЭТО РАЗНЫЕ МАТРИЦЫ
         {
             m_cols = matrix.m_cols;
             m_rows = matrix.m_rows;
